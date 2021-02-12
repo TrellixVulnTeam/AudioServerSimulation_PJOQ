@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from flask.views import MethodView
 from datetime import datetime
+from validators import is_positive,future_date
 import os
 
 load_dotenv()
@@ -37,11 +38,11 @@ class AudioCRUDAPI(MethodView):
                 abort(500,"Narrator missing")
         duration = data['duration']
         uploadedDate = data['uploadedDate']
-        if duration <= 0 and datetime.strptime(uploadedDate, '%Y-%m-%d %H:%M:%S') <= datetime.now():
+        if is_positive(duration) and future_date(uploadedDate):
             abort(400, "duration must be positive and upload date must be in the future")
-        elif datetime.strptime(uploadedDate, '%Y-%m-%d %H:%M:%S') <= datetime.now():
+        elif future_date(uploadedDate):
             abort(400, "Uploaded date must be in the future")
-        elif duration <= 0:
+        elif is_positive(duration):
             abort(400, "duration must be positive")
         else:
             try:
