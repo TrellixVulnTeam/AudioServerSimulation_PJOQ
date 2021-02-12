@@ -38,11 +38,11 @@ class AudioCRUDAPI(MethodView):
                 abort(500,"Narrator missing")
         duration = data['duration']
         uploadedDate = data['uploadedDate']
-        if is_positive(duration) and future_date(uploadedDate):
+        if not is_positive(duration) and not future_date(uploadedDate):
             abort(400, "duration must be positive and upload date must be in the future")
-        elif future_date(uploadedDate):
+        elif not future_date(uploadedDate):
             abort(400, "Uploaded date must be in the future")
-        elif is_positive(duration):
+        elif not is_positive(duration):
             abort(400, "duration must be positive")
         else:
             try:
@@ -130,7 +130,7 @@ class AudioCRUDAPI(MethodView):
         if filetype == 'song':
             song = Song.query.get(id)
             song.id = data['id']
-            song.podcastName = data['podcastName']
+            song.songName = data['name']
             song.duration = data['duration']
             song.uploadedDate = data['uploadedDate']
             song.save_to_db()
@@ -138,7 +138,7 @@ class AudioCRUDAPI(MethodView):
         elif filetype == 'podcast':
             podcast = Podcast.query.get(id)
             podcast.id = data['id']
-            podcast.podcastName = data['podcastName']
+            podcast.podcastName = data['name']
             podcast.duration = data['duration']
             podcast.uploadedDate = data['uploadedDate']
             podcast.host = data['host']
